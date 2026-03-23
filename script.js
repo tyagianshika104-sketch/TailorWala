@@ -32,14 +32,15 @@ const t = {
 window.onload = function () {
   const savedUser = sessionStorage.getItem('tw_user');
   if(savedUser) {
-    const user = JSON.parse(savedUser);
-    showUserBar(user.name);
+    try {
+      const user = JSON.parse(savedUser);
+      showUserBar(user.name);
+    } catch(e) {}
   }
   setLang('en');
   renderTailors(tailors);
   initSearchMap(27.1767, 78.0081);
-};
- 
+}; 
 function setLang(lang) {
   currentLang = lang;
  
