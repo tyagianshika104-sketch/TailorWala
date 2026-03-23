@@ -472,7 +472,11 @@ function doRegister(){
   if(pass!==confirm){alert(currentLang==='hi'?'Passwords match नहीं हो रहे':'Passwords do not match');return;}
   if(!terms){alert(currentLang==='hi'?'Terms से agree करें':'Please agree to Terms');return;}
   if(currentRole==='tailor'&&!document.getElementById('shop-name').value){alert(currentLang==='hi'?'दुकान का नाम डालें':'Enter shop name');return;}
-
+  sessionStorage.setItem('tw_user', JSON.stringify({
+  name: currentRole==='tailor' ? document.getElementById('shop-name').value : name,
+  role: currentRole,
+  phone: phone
+ }));
   document.getElementById('reg-form').style.display='none';
   const s=document.getElementById('success-screen');
   s.style.display='block';
