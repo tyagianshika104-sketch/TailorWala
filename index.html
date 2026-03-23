@@ -213,6 +213,22 @@
 </div>
  
 <script src="script.js"></script>
+<script>
+try {
+  var u = sessionStorage.getItem('tw_user');
+  if(u) {
+    var obj = JSON.parse(u);
+    var bar = document.getElementById('user-bar');
+    var nameEl = document.getElementById('user-name-show');
+    var btn = document.querySelector('.btn-nav');
+    if(bar) bar.style.display = 'block';
+    if(nameEl) nameEl.textContent = obj.name;
+    if(btn) btn.textContent = '👤 ' + obj.name.split(' ')[0];
+  }
+} catch(e) {}
+</script>
+</body>
+</html>
 </body>
 </html>
  
