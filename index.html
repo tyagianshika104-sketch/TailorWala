@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TailorWala | Find & Book Local Tailors</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+ 
+<!-- LANGUAGE TOGGLE -->
+<div id="lang-bar" style="background:#0F6E56;color:white;text-align:center;padding:6px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:12px">
+  <span id="lang-msg">🌐 Choose your language / अपनी भाषा चुनें</span>
+  <button onclick="setLang('en')" id="btn-en" style="background:white;color:#0F6E56;border:none;padding:3px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer">English</button>
+  <button onclick="setLang('hi')" id="btn-hi" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.5);padding:3px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer">हिंदी</button>
+</div>
+ 
+<!-- NAV -->
+<nav class="navbar">
+  <div class="container flex-between">
+    <div class="brand">✂ Tailor<span>Wala</span></div>
+    <div class="nav-links">
+      <a onclick="show('home')" data-en="Home" data-hi="होम">Home</a>
+      <a onclick="show('search')" data-en="Find Tailor" data-hi="दर्जी खोजें">Find Tailor</a>
+      <a onclick="show('track')" data-en="Track Order" data-hi="ऑर्डर ट्रैक">Track Order</a>
+      <a onclick="window.location.href='measurements.html'" data-en="Measurements" data-hi="माप">Measurements</a>
+      <button class="btn-nav" onclick="window.location.href='register.html'" data-en="Login / Register" data-hi="लॉगिन / रजिस्टर">Login / Register</button>
+    </div>
+  </div>
+</nav>
+ 
+<!-- USER BAR -->
+<div id="user-bar" style="display:none;background:#0F6E56;color:white;text-align:center;padding:8px;font-size:14px;position:sticky;top:0;z-index:99">
+  👋 <span data-en="Welcome!" data-hi="स्वागत है!">Welcome!</span> <span id="user-name-show"></span> | <span style="cursor:pointer;text-decoration:underline" onclick="logout()" data-en="Logout" data-hi="लॉगआउट">Logout</span>
+</div>
+ 
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+ 
+  <!-- HERO with background image -->
+  <section class="hero" style="background-image:url('tailor-bg.png')">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <h1 data-en="Empowering Local Tailors<br>with <span>Digital Visibility</span>" data-hi="स्थानीय दर्जियों को<br><span>डिजिटल पहचान</span> दिलाएं">Empowering Local Tailors<br>with <span>Digital Visibility</span></h1>
+      <p data-en="Find nearby tailors, browse stitching designs, and book your custom outfit. 100% verified tailors with real GPS locations." data-hi="पास के दर्जी खोजें, डिज़ाइन देखें और अपना आर्डर बुक करें। 100% verified दर्जी, असली GPS लोकेशन के साथ।">Find nearby tailors, browse stitching designs, and book your custom outfit. 100% verified tailors with real GPS locations.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="show('search')"><i class="fa-solid fa-search"></i> <span data-en="Find Tailor" data-hi="दर्जी खोजें">Find Tailor</span></button>
+        <button class="btn-secondary" onclick="window.location.href='register.html'"><i class="fa-solid fa-store"></i> <span data-en="Join as Tailor" data-hi="दर्जी के रूप में जुड़ें">Join as Tailor</span></button>
+      </div>
+    </div>
+  </section>
+ 
+  <section class="features">
+    <div class="container">
+      <h2 class="sec-title"><span data-en="Why Choose" data-hi="क्यों चुनें">Why Choose</span> <span class="teal-text">Tailor Wala?</span></h2>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon teal-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <h3 data-en="Verified Locations" data-hi="सत्यापित स्थान">Verified Locations</h3>
+          <p data-en="Every tailor's shop is GPS-verified — no fake or duplicate listings ever." data-hi="हर दर्जी की दुकान GPS-verified है — कोई नकली लिस्टिंग नहीं।">Every tailor's shop is GPS-verified — no fake or duplicate listings ever.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon orange-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+          <h3 data-en="Easy Registration" data-hi="आसान रजिस्ट्रेशन">Easy Registration</h3>
+          <p data-en="Register with just your name, phone number and password — quick and simple." data-hi="सिर्फ नाम, फोन नंबर और पासवर्ड से रजिस्टर करें — आसान और तेज़।">Register with just your name, phone number and password — quick and simple.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon teal-icon"><i class="fa-solid fa-ruler"></i></div>
+          <h3 data-en="Digital Measurements" data-hi="डिजिटल माप">Digital Measurements</h3>
+          <p data-en="Save your measurements once, use them across all your tailor bookings." data-hi="एक बार माप सेव करें, सभी बुकिंग में उपयोग करें।">Save your measurements once, use them across all your tailor bookings.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <section class="tailors-section">
+    <div class="container">
+      <div class="sec-header">
+        <h2><span data-en="Featured" data-hi="प्रमुख">Featured</span> <span class="teal-text"><span data-en="Tailors" data-hi="दर्जी">Tailors</span></span></h2>
+        <span class="view-all" onclick="show('search')" data-en="View All →" data-hi="सभी देखें →">View All →</span>
+      </div>
+      <div class="tailors-grid" id="home-tailors">
+        <div style="text-align:center;padding:3rem;grid-column:1/-1;color:#888780">
+          <div style="font-size:48px;margin-bottom:1rem">🧵</div>
+          <p data-en="No tailors registered yet. Be the first to join!" data-hi="अभी कोई दर्जी रजिस्टर नहीं। पहले जुड़ें!">No tailors registered yet. Be the first to join!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <section class="cta-section">
+    <div class="container">
+      <h2 data-en="Are you a skilled tailor?" data-hi="क्या आप एक कुशल दर्जी हैं?">Are you a skilled tailor?</h2>
+      <p data-en="Join TailorWala today — set up your verified digital storefront and start receiving orders from nearby customers." data-hi="आज TailorWala से जुड़ें — अपनी verified दुकान बनाएं और पास के ग्राहकों से ऑर्डर पाएं।">Join TailorWala today — set up your verified digital storefront and start receiving orders from nearby customers.</p>
+      <button class="btn-cta" onclick="window.location.href='register.html'" data-en="Create Tailor Profile" data-hi="दर्जी प्रोफाइल बनाएं">Create Tailor Profile</button>
+    </div>
+  </section>
+</div>
+ 
+<!-- SEARCH -->
+<div class="screen" id="screen-search">
+  <div class="search-page">
+    <div class="search-bar-wrap">
+      <h3 data-en="Find Tailors Near You" data-hi="पास के दर्जी खोजें">Find Tailors Near You</h3>
+      <div class="search-row">
+        <input class="search-input" id="search-q" data-en-placeholder="Search by name or specialty..." data-hi-placeholder="नाम या स्पेशलिटी से खोजें..." placeholder="Search by name or specialty...">
+        <button class="loc-btn" onclick="useLocation()"><i class="fa-solid fa-location-dot"></i> <span data-en="Use My Location" data-hi="मेरी लोकेशन">Use My Location</span></button>
+        <button class="search-go" onclick="doSearch()" data-en="Search" data-hi="खोजें">Search</button>
+      </div>
+      <div id="loc-status" style="font-size:12px;color:#0F6E56;margin-top:8px;min-height:18px"></div>
+    </div>
+    <div id="real-search-map" style="height:280px;border-radius:16px;margin-bottom:1rem;border:0.5px solid rgba(0,0,0,0.12);overflow:hidden;z-index:1"></div>
+    <div style="font-size:13px;color:#0F6E56;margin-bottom:1rem;font-weight:500" id="result-count">📍 <span data-en="All tailors shown" data-hi="सभी दर्जी दिख रहे हैं">All tailors shown</span></div>
+    <div class="tailors-grid" id="tailor-results"></div>
+  </div>
+</div>
+ 
+<!-- PROFILE -->
+<div class="screen" id="screen-profile">
+  <div class="profile-page">
+    <div class="back-link" onclick="show('search')" style="margin-bottom:1rem">← <span data-en="Back to Search" data-hi="खोज पर वापस">Back to Search</span></div>
+    <div class="profile-hero-card">
+      <div class="profile-top">
+        <div class="profile-avatar">🧵</div>
+        <div class="profile-info">
+          <h2 id="profile-name">Tailor Name</h2>
+          <div class="loc-detail"><i class="fa-solid fa-location-dot"></i> <strong id="profile-addr">Address</strong></div>
+          <div style="font-size:12px;color:#888780;margin-top:4px">✅ GPS Verified &nbsp;|&nbsp; 🕐 <span data-en="Open: 9am – 8pm" data-hi="खुला: सुबह 9 – शाम 8">Open: 9am – 8pm</span></div>
+          <div style="margin-top:8px"><span class="rating">⭐ <span id="profile-rating">5.0</span></span></div>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-num">New</div><div class="stat-lbl" data-en="Tailor" data-hi="दर्जी">Tailor</div></div>
+        <div class="stat"><div class="stat-num">GPS</div><div class="stat-lbl" data-en="Verified" data-hi="सत्यापित">Verified</div></div>
+        <div class="stat"><div class="stat-num" id="profile-dist">—</div><div class="stat-lbl" data-en="Distance" data-hi="दूरी">Distance</div></div>
+      </div>
+    </div>
+    <div class="profile-section">
+      <h4 class="section-label" data-en="BOOK APPOINTMENT" data-hi="अपॉइंटमेंट बुक करें">BOOK APPOINTMENT</h4>
+      <div class="two-col">
+        <div>
+          <label class="field-label" data-en="Delivery Date" data-hi="डिलीवरी तारीख">Delivery Date</label>
+          <input type="date" class="phone-input" style="width:100%">
+        </div>
+        <div>
+          <label class="field-label" data-en="Garment Type" data-hi="कपड़े का प्रकार">Garment Type</label>
+          <select class="phone-input" style="width:100%">
+            <option data-en="Saree Blouse" data-hi="साड़ी ब्लाउज">Saree Blouse</option>
+            <option data-en="Salwar Kameez" data-hi="सलवार कमीज">Salwar Kameez</option>
+            <option data-en="Lehenga" data-hi="लहंगा">Lehenga</option>
+            <option data-en="Kurta" data-hi="कुर्ता">Kurta</option>
+            <option data-en="Suit" data-hi="सूट">Suit</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-full" style="margin-top:14px" onclick="show('success')" data-en="✅ Confirm Booking" data-hi="✅ बुकिंग कन्फर्म करें">✅ Confirm Booking</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- SUCCESS -->
+<div class="screen" id="screen-success">
+  <div class="auth-wrap">
+    <div class="auth-card" style="text-align:center">
+      <div class="success-icon">🎉</div>
+      <h2 data-en="Booking Confirmed!" data-hi="बुकिंग कन्फर्म हो गई!">Booking Confirmed!</h2>
+      <p style="color:#888780;font-size:14px;margin:8px 0 1rem" data-en="Your order has been placed. You will receive an SMS update." data-hi="आपका ऑर्डर दर्ज हो गया। SMS अपडेट मिलेगा।">Your order has been placed. You will receive an SMS update.</p>
+      <div class="order-id">TW-2026-<span id="order-num">0001</span></div>
+      <button class="btn-full" onclick="show('home')" data-en="Back to Home" data-hi="होम पर जाएं">Back to Home</button>
+      <button class="btn-full btn-outline-teal" style="margin-top:8px" onclick="show('track')" data-en="Track Order" data-hi="ऑर्डर ट्रैक करें">Track Order</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- TRACK -->
+<div class="screen" id="screen-track">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2 data-en="Track Your Order" data-hi="अपना ऑर्डर ट्रैक करें">Track Your Order</h2>
+      <p class="sub" data-en="Enter your Order ID to see live status" data-hi="लाइव स्टेटस देखने के लिए Order ID डालें">Enter your Order ID to see live status</p>
+      <label class="field-label" data-en="Order ID" data-hi="ऑर्डर ID">Order ID</label>
+      <input class="phone-input" style="width:100%;margin-bottom:1rem" placeholder="e.g. TW-2026-0001" value="TW-2026-0001">
+      <button class="btn-full" onclick="showTrack()" data-en="Track" data-hi="ट्रैक करें">Track</button>
+      <div id="track-result" style="display:none;margin-top:1.5rem">
+        <div class="track-timeline">
+          <div class="track-item done">
+            <div class="track-dot done-dot"></div>
+            <div><div class="track-time">Mar 20 · 10:00am</div><div class="track-title" data-en="✅ Order Confirmed" data-hi="✅ ऑर्डर कन्फर्म">✅ Order Confirmed</div></div>
+          </div>
+          <div class="track-item done">
+            <div class="track-dot done-dot"></div>
+            <div><div class="track-time">Mar 21 · 2:00pm</div><div class="track-title" data-en="✂ In Progress" data-hi="✂ काम चल रहा है">✂ In Progress</div></div>
+          </div>
+          <div class="track-item pending">
+            <div class="track-dot pending-dot"></div>
+            <div><div class="track-time" data-en="Pending" data-hi="बाकी">Pending</div><div class="track-title" data-en="🎁 Ready for Pickup" data-hi="🎁 लेने के लिए तैयार">🎁 Ready for Pickup</div></div>
+          </div>
+        </div>
+        <button class="btn-full" style="margin-top:1.5rem" onclick="show('home')" data-en="Back to Home" data-hi="होम पर जाएं">Back to Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<script src="script.js"></script>
+</body>
+</html>
+ 

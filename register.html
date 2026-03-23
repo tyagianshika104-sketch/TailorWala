@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TailorWala | Register</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow-x:hidden}
+    .bg-image{position:fixed;inset:0;background:url('tailor-bg.png') center center/cover no-repeat;filter:brightness(0.4);z-index:0}
+    .bg-overlay{position:fixed;inset:0;background:linear-gradient(135deg,rgba(15,110,86,0.75) 0%,rgba(216,90,48,0.5) 100%);z-index:1}
+
+    /* LANG BAR */
+    .lang-bar{position:fixed;top:0;left:0;right:0;background:rgba(10,82,64,0.95);color:white;text-align:center;padding:6px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:10px;z-index:200}
+    .lang-btn{padding:3px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif}
+
+    .page-wrap{position:relative;z-index:2;width:100%;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:5rem 1rem 2rem}
+    .split-card{display:flex;width:100%;max-width:900px;border-radius:24px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,0.4)}
+
+    .left-panel{flex:1;background:rgba(15,110,86,0.93);padding:3rem 2rem;display:flex;flex-direction:column;justify-content:center;color:white}
+    .brand{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;margin-bottom:2rem;display:flex;align-items:center;gap:8px}
+    .brand span{color:#FAECE7}
+    .left-panel h2{font-family:'Syne',sans-serif;font-size:1.5rem;line-height:1.3;margin-bottom:1rem;color:white}
+    .left-panel p{font-size:14px;opacity:0.85;line-height:1.6;margin-bottom:2rem}
+    .perks{display:flex;flex-direction:column;gap:12px}
+    .perk{display:flex;align-items:center;gap:10px;font-size:13px;opacity:0.9}
+    .perk-icon{width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+
+    .right-panel{flex:1.1;background:rgba(255,255,255,0.97);padding:2.5rem 2rem;display:flex;flex-direction:column;justify-content:center;overflow-y:auto;max-height:100vh}
+    .right-panel h3{font-family:'Syne',sans-serif;font-size:1.3rem;margin-bottom:4px;color:#2C2C2A}
+    .sub{font-size:13px;color:#888780;margin-bottom:1.25rem}
+    .role-tabs{display:flex;background:#F1EFE8;border-radius:12px;padding:4px;gap:4px;margin-bottom:1.25rem}
+    .role-tab{flex:1;padding:9px;border-radius:9px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:#888780;transition:0.2s}
+    .role-tab.active{background:#fff;color:#0F6E56;box-shadow:0 1px 4px rgba(0,0,0,0.1)}
+
+    .field{margin-bottom:12px}
+    .field label{display:block;font-size:11px;font-weight:600;color:#888780;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.4px}
+    .input-wrap{position:relative;display:flex;align-items:center}
+    .input-wrap i{position:absolute;left:12px;color:#B4B2A9;font-size:14px;z-index:1}
+    .input-wrap input,.input-wrap select{width:100%;border:1.5px solid rgba(0,0,0,0.12);border-radius:10px;padding:11px 14px 11px 36px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;color:#2C2C2A;background:#fff;transition:0.2s}
+    .input-wrap input:focus,.input-wrap select:focus{border-color:#0F6E56}
+    .input-wrap input.error{border-color:#E24B4A}
+    .input-wrap input.success{border-color:#1D9E75}
+    .phone-row{display:flex;gap:8px}
+    .cc{width:90px;border:1.5px solid rgba(0,0,0,0.12);border-radius:10px;padding:11px 8px;font-size:13px;background:#fff;font-family:'DM Sans',sans-serif;outline:none;color:#2C2C2A;flex-shrink:0}
+    .cc:focus{border-color:#0F6E56}
+    .eye-btn{position:absolute;right:12px;background:none;border:none;cursor:pointer;color:#B4B2A9;font-size:14px;padding:0;z-index:1}
+    .strength-bar{height:4px;border-radius:4px;background:#F1EFE8;margin-top:6px;overflow:hidden}
+    .strength-fill{height:100%;border-radius:4px;transition:0.3s;width:0%}
+    .strength-text{font-size:11px;margin-top:3px;color:#888780}
+    .err-msg{font-size:11px;color:#E24B4A;margin-top:4px;display:none}
+    .terms{display:flex;align-items:flex-start;gap:8px;margin-bottom:1.25rem;font-size:12px;color:#888780}
+    .terms input{margin-top:2px;accent-color:#0F6E56}
+    .terms a{color:#0F6E56;text-decoration:none}
+    .btn-register{width:100%;background:#0F6E56;color:#fff;border:none;padding:13px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;cursor:pointer;transition:0.2s;margin-bottom:1rem}
+    .btn-register:hover{background:#0a5240}
+    .login-link{text-align:center;font-size:13px;color:#888780}
+    .login-link a{color:#0F6E56;font-weight:500;text-decoration:none;cursor:pointer}
+
+    /* Location section */
+    .loc-section{display:none;margin-bottom:12px}
+    .loc-box{border:1.5px dashed rgba(0,0,0,0.15);border-radius:12px;padding:1.25rem;text-align:center;cursor:pointer;transition:0.2s;margin-bottom:10px}
+    .loc-box:hover{border-color:#0F6E56;background:#E1F5EE}
+    .loc-allow-btn{margin-top:10px;background:#0F6E56;color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;display:inline-block}
+    .loc-result{background:#E1F5EE;border:1.5px solid #1D9E75;border-radius:12px;padding:1rem;font-size:13px;color:#085041;margin-bottom:10px}
+    .loc-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .loc-pill{background:rgba(15,110,86,0.15);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;color:#085041}
+
+    /* Success */
+    .success-screen{display:none;text-align:center;padding:1rem 0}
+    .success-icon{width:72px;height:72px;background:#E1F5EE;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 1rem}
+    .success-screen h3{font-size:1.3rem;margin-bottom:8px;color:#2C2C2A;font-family:'Syne',sans-serif}
+    .success-screen p{font-size:13px;color:#888780;margin-bottom:1.5rem;line-height:1.6}
+    .btn-continue{width:100%;background:#0F6E56;color:#fff;border:none;padding:13px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer}
+
+    @media(max-width:640px){
+      .split-card{flex-direction:column}
+      .left-panel{padding:2rem 1.5rem}
+      .right-panel{padding:2rem 1.5rem;max-height:none}
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-image"></div>
+<div class="bg-overlay"></div>
+
+<!-- LANG BAR -->
+<div class="lang-bar">
+  <span>🌐 Choose language / भाषा चुनें</span>
+  <button class="lang-btn" id="reg-btn-en" onclick="setLang('en')" style="background:white;color:#0F6E56;border:none">English</button>
+  <button class="lang-btn" id="reg-btn-hi" onclick="setLang('hi')" style="background:rgba(255,255,255,0.2);color:white">हिंदी</button>
+</div>
+
+<div class="page-wrap">
+  <div class="split-card">
+
+    <!-- LEFT -->
+    <div class="left-panel">
+      <div class="brand">✂ Tailor<span>Wala</span></div>
+      <h2 id="lp-title">Digitize Your Tailor Shop!</h2>
+      <p id="lp-desc">Thousands of customers are looking for you. Register and start receiving orders today.</p>
+      <div class="perks">
+        <div class="perk"><div class="perk-icon">📍</div><span id="p1">GPS verified location — no fake listings</span></div>
+        <div class="perk"><div class="perk-icon">📱</div><span id="p2">Customers can find you nearby</span></div>
+        <div class="perk"><div class="perk-icon">📦</div><span id="p3">Manage orders & measurements in one place</span></div>
+        <div class="perk"><div class="perk-icon">⭐</div><span id="p4">Build your reputation with reviews</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+
+      <!-- FORM -->
+      <div id="reg-form">
+        <h3 id="form-title">Create Account</h3>
+        <p class="sub" id="form-sub">Register in 1 minute — completely free!</p>
+
+        <div class="role-tabs">
+          <button class="role-tab active" onclick="setRole(this,'customer')" id="tab-customer">👤 Customer</button>
+          <button class="role-tab" onclick="setRole(this,'tailor')" id="tab-tailor">✂ Tailor / Darzi</button>
+        </div>
+
+        <div class="field">
+          <label id="lbl-name">Full Name</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="fullname" placeholder="Your full name">
+          </div>
+        </div>
+
+        <div class="field">
+          <label id="lbl-username">Username</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-at"></i>
+            <input type="text" id="username" placeholder="e.g. grover_tailors" oninput="validateUsername()">
+          </div>
+          <div class="err-msg" id="err-username">Only letters, numbers and _ allowed</div>
+        </div>
+
+        <div class="field">
+          <label id="lbl-phone">Mobile Number</label>
+          <div class="phone-row">
+            <select class="cc"><option>🇮🇳 +91</option><option>🇦🇪 +971</option><option>🇺🇸 +1</option></select>
+            <div class="input-wrap" style="flex:1">
+              <i class="fa-solid fa-phone"></i>
+              <input type="tel" id="phone" maxlength="10" placeholder="98765 43210" oninput="this.value=this.value.replace(/\D/g,'');validatePhone()">
+            </div>
+          </div>
+          <div class="err-msg" id="err-phone">Enter 10 digit number</div>
+        </div>
+
+        <div class="field">
+          <label id="lbl-pass">Password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="password" placeholder="Create strong password" oninput="checkStrength()">
+            <button class="eye-btn" onclick="togglePass('password',this)" type="button"><i class="fa-solid fa-eye"></i></button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+          <div class="strength-text" id="strength-text"></div>
+        </div>
+
+        <div class="field">
+          <label id="lbl-confirm">Confirm Password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="confirm-pass" placeholder="Re-enter password" oninput="validateConfirm()">
+            <button class="eye-btn" onclick="togglePass('confirm-pass',this)" type="button"><i class="fa-solid fa-eye"></i></button>
+          </div>
+          <div class="err-msg" id="err-confirm">Passwords do not match</div>
+        </div>
+
+        <!-- Tailor only: shop + location -->
+        <div class="loc-section" id="tailor-extra">
+          <div class="field">
+            <label id="lbl-shop">Shop Name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-store"></i>
+              <input type="text" id="shop-name" placeholder="e.g. Grover Tailors">
+            </div>
+          </div>
+          <div class="field">
+            <label id="lbl-spec">Specialty</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-scissors"></i>
+              <select id="specialty" style="padding-left:36px">
+                <option>Bridal Wear</option>
+                <option>Menswear</option>
+                <option>Kids Wear</option>
+                <option>Casual / Daily</option>
+                <option>Ladies Wear</option>
+              </select>
+            </div>
+          </div>
+          <label id="lbl-loc" style="font-size:11px;font-weight:600;color:#888780;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;display:block">Shop Location</label>
+          <div class="loc-box" id="loc-idle" onclick="detectLoc()">
+            <div style="font-size:32px;margin-bottom:8px">📍</div>
+            <p id="loc-idle-text" style="font-size:14px;font-weight:500;color:#2C2C2A;margin-bottom:4px">Auto Detect Location</p>
+            <p style="font-size:12px;color:#888780" id="loc-idle-sub">Click to detect your shop's GPS location</p>
+            <div class="loc-allow-btn" id="loc-btn-text">Allow Location</div>
+          </div>
+          <div id="loc-loading" style="display:none;text-align:center;padding:1rem">
+            <div style="font-size:28px">📡</div>
+            <p style="font-size:13px;color:#0F6E56;margin-top:8px" id="loc-loading-text">Detecting GPS location...</p>
+          </div>
+          <div id="loc-found" style="display:none">
+            <div id="reg-map" style="height:180px;border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(15,110,86,0.2)"></div>
+            <p style="font-size:11px;color:#0F6E56;text-align:center;margin-bottom:8px" id="drag-hint">📌 Drag pin to set exact location</p>
+            <div class="loc-result">
+              <div style="font-weight:600;margin-bottom:4px" id="loc-found-title">✅ Location Found!</div>
+              <div id="addr-txt" style="font-size:13px"></div>
+              <div class="loc-pills">
+                <span class="loc-pill" id="lat-txt"></span>
+                <span class="loc-pill" id="lng-txt"></span>
+                <span class="loc-pill">GPS ✓</span>
+              </div>
+            </div>
+            <button onclick="detectLoc()" style="width:100%;background:none;border:1.5px solid #0F6E56;color:#0F6E56;padding:8px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;margin-top:6px" id="change-loc-btn">Change Location</button>
+          </div>
+        </div>
+
+        <div class="terms">
+          <input type="checkbox" id="terms-check">
+          <label for="terms-check" id="terms-text">I agree to <a href="#">Terms</a> & <a href="#">Privacy Policy</a>. My number will only be used for verification — never shared.</label>
+        </div>
+
+        <button class="btn-register" onclick="doRegister()" id="reg-btn">Register →</button>
+        <div class="login-link"><span id="login-link-text">Already have an account?</span> <a onclick="window.location.href='index.html'" id="login-link-action">Login</a></div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="success-screen">
+        <div class="success-icon">🎉</div>
+        <h3 id="success-title">Registration Done!</h3>
+        <p id="success-msg">Your account is ready. Start exploring tailors near you!</p>
+        <button class="btn-continue" id="success-btn" onclick="window.location.href='index.html'">Explore TailorWala →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let currentRole = 'customer';
+let currentLang = 'en';
+let regMap = null;
+let regMarker = null;
+
+const txt = {
+  en: {
+    lpTitle: 'Digitize Your Tailor Shop!',
+    lpDesc: 'Thousands of customers are looking for you. Register and start receiving orders today.',
+    p1:'GPS verified location — no fake listings',p2:'Customers can find you nearby',
+    p3:'Manage orders & measurements in one place',p4:'Build your reputation with reviews',
+    formTitle:'Create Account',formSub:'Register in 1 minute — completely free!',
+    tabCustomer:'👤 Customer',tabTailor:'✂ Tailor / Darzi',
+    lblName:'Full Name',lblUsername:'Username',lblPhone:'Mobile Number',
+    lblPass:'Password',lblConfirm:'Confirm Password',lblShop:'Shop Name',
+    lblSpec:'Specialty',lblLoc:'Shop Location',
+    locIdle:'Auto Detect Location',locIdleSub:"Click to detect your shop's GPS location",
+    locBtn:'Allow Location',locLoading:'Detecting GPS location...',
+    locFoundTitle:'✅ Location Found!',dragHint:'📌 Drag pin to set exact location',
+    changeLoc:'Change Location',
+    errUser:'Only letters, numbers and _ allowed',errPhone:'Enter 10 digit number',errConfirm:'Passwords do not match',
+    terms:"I agree to Terms & Privacy Policy. My number will only be used for verification — never shared.",
+    regBtn:'Register →',loginText:'Already have an account?',loginAction:'Login',
+    successTitle:'Registration Done!',successTailor:'Tailor Account Ready!',
+    successMsgCustomer:'Your account is ready. Start exploring tailors near you!',
+    successMsgTailor:'Your shop profile is live! Customers near you can now find you.',
+    successBtn:'Explore TailorWala →',
+    strengthWeak:'Weak',strengthFair:'Fair',strengthGood:'Good',strengthStrong:'Strong 💪',
+  },
+  hi: {
+    lpTitle:'अपनी दर्जी दुकान को डिजिटल बनाएं!',
+    lpDesc:'हज़ारों ग्राहक आपको ढूंढ रहे हैं। आज रजिस्टर करें और ऑर्डर पाना शुरू करें।',
+    p1:'GPS verified लोकेशन — कोई नकली लिस्टिंग नहीं',p2:'ग्राहक पास से आपको ढूंढ सकते हैं',
+    p3:'ऑर्डर और माप एक जगह मैनेज करें',p4:'रिव्यू से अपनी पहचान बनाएं',
+    formTitle:'अकाउंट बनाएं',formSub:'1 मिनट में रजिस्टर करें — बिल्कुल मुफ्त!',
+    tabCustomer:'👤 ग्राहक',tabTailor:'✂ दर्जी / कारीगर',
+    lblName:'पूरा नाम',lblUsername:'यूज़रनेम',lblPhone:'मोबाइल नंबर',
+    lblPass:'पासवर्ड',lblConfirm:'पासवर्ड दोबारा',lblShop:'दुकान का नाम',
+    lblSpec:'स्पेशलिटी',lblLoc:'दुकान की लोकेशन',
+    locIdle:'Auto लोकेशन Detect करें',locIdleSub:'अपनी दुकान की GPS लोकेशन detect करने के लिए क्लिक करें',
+    locBtn:'लोकेशन Allow करें',locLoading:'GPS लोकेशन detect हो रही है...',
+    locFoundTitle:'✅ लोकेशन मिल गई!',dragHint:'📌 Pin drag करके exact लोकेशन set करें',
+    changeLoc:'लोकेशन बदलें',
+    errUser:'सिर्फ letters, numbers और _ allowed हैं',errPhone:'10 digit नंबर डालें',errConfirm:'Passwords match नहीं हो रहे',
+    terms:"मैं Terms & Privacy Policy से agree करता/करती हूं। मेरा नंबर सिर्फ verification के लिए उपयोग होगा।",
+    regBtn:'रजिस्टर करें →',loginText:'पहले से अकाउंट है?',loginAction:'लॉगिन करें',
+    successTitle:'रजिस्ट्रेशन हो गया!',successTailor:'दर्जी अकाउंट तैयार!',
+    successMsgCustomer:'आपका अकाउंट तैयार है। पास के दर्जी खोजें!',
+    successMsgTailor:'आपकी दुकान live है! पास के ग्राहक अब आपको ढूंढ सकते हैं।',
+    successBtn:'TailorWala Explore करें →',
+    strengthWeak:'कमज़ोर',strengthFair:'ठीक है',strengthGood:'अच्छा',strengthStrong:'मज़बूत 💪',
+  }
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  const l = txt[lang];
+  document.getElementById('reg-btn-en').style.background = lang==='en'?'white':'rgba(255,255,255,0.2)';
+  document.getElementById('reg-btn-en').style.color = lang==='en'?'#0F6E56':'white';
+  document.getElementById('reg-btn-en').style.border = lang==='en'?'none':'1px solid rgba(255,255,255,0.5)';
+  document.getElementById('reg-btn-hi').style.background = lang==='hi'?'white':'rgba(255,255,255,0.2)';
+  document.getElementById('reg-btn-hi').style.color = lang==='hi'?'#0F6E56':'white';
+  document.getElementById('reg-btn-hi').style.border = lang==='hi'?'none':'1px solid rgba(255,255,255,0.5)';
+
+  document.getElementById('lp-title').textContent=l.lpTitle;
+  document.getElementById('lp-desc').textContent=l.lpDesc;
+  document.getElementById('p1').textContent=l.p1;document.getElementById('p2').textContent=l.p2;
+  document.getElementById('p3').textContent=l.p3;document.getElementById('p4').textContent=l.p4;
+  document.getElementById('form-title').textContent=l.formTitle;
+  document.getElementById('form-sub').textContent=l.formSub;
+  document.getElementById('tab-customer').textContent=l.tabCustomer;
+  document.getElementById('tab-tailor').textContent=l.tabTailor;
+  document.getElementById('lbl-name').textContent=l.lblName;
+  document.getElementById('lbl-username').textContent=l.lblUsername;
+  document.getElementById('lbl-phone').textContent=l.lblPhone;
+  document.getElementById('lbl-pass').textContent=l.lblPass;
+  document.getElementById('lbl-confirm').textContent=l.lblConfirm;
+  document.getElementById('lbl-shop').textContent=l.lblShop;
+  document.getElementById('lbl-spec').textContent=l.lblSpec;
+  document.getElementById('lbl-loc').textContent=l.lblLoc;
+  document.getElementById('loc-idle-text').textContent=l.locIdle;
+  document.getElementById('loc-idle-sub').textContent=l.locIdleSub;
+  document.getElementById('loc-btn-text').textContent=l.locBtn;
+  document.getElementById('loc-loading-text').textContent=l.locLoading;
+  document.getElementById('loc-found-title').textContent=l.locFoundTitle;
+  document.getElementById('drag-hint').textContent=l.dragHint;
+  document.getElementById('change-loc-btn').textContent=l.changeLoc;
+  document.getElementById('err-username').textContent=l.errUser;
+  document.getElementById('err-phone').textContent=l.errPhone;
+  document.getElementById('err-confirm').textContent=l.errConfirm;
+  document.getElementById('terms-text').textContent=l.terms;
+  document.getElementById('reg-btn').textContent=l.regBtn;
+  document.getElementById('login-link-text').textContent=l.loginText;
+  document.getElementById('login-link-action').textContent=l.loginAction;
+}
+
+function setRole(btn, role) {
+  currentRole = role;
+  document.querySelectorAll('.role-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tailor-extra').style.display = role==='tailor'?'block':'none';
+}
+
+function validateUsername(){
+  const val=document.getElementById('username').value;
+  const err=document.getElementById('err-username');
+  const inp=document.getElementById('username');
+  if(val.length>0&&!/^[a-zA-Z0-9_]+$/.test(val)){err.style.display='block';inp.className='error';}
+  else if(val.length>=3){err.style.display='none';inp.className='success';}
+  else{err.style.display='none';inp.className='';}
+}
+
+function validatePhone(){
+  const val=document.getElementById('phone').value;
+  const err=document.getElementById('err-phone');
+  const inp=document.getElementById('phone');
+  if(val.length>0&&val.length<10){err.style.display='block';inp.className='error';}
+  else if(val.length===10){err.style.display='none';inp.className='success';}
+  else{err.style.display='none';inp.className='';}
+}
+
+function checkStrength(){
+  const pass=document.getElementById('password').value;
+  const fill=document.getElementById('strength-fill');
+  const text=document.getElementById('strength-text');
+  const l=txt[currentLang];
+  let score=0;
+  if(pass.length>=6)score++;if(pass.length>=10)score++;
+  if(/[A-Z]/.test(pass))score++;if(/[0-9]/.test(pass))score++;if(/[^a-zA-Z0-9]/.test(pass))score++;
+  const levels=[
+    {w:'0%',color:'#F1EFE8',label:''},
+    {w:'25%',color:'#E24B4A',label:l.strengthWeak},
+    {w:'50%',color:'#EF9F27',label:l.strengthFair},
+    {w:'75%',color:'#1D9E75',label:l.strengthGood},
+    {w:'100%',color:'#0F6E56',label:l.strengthStrong},
+  ];
+  const lv=levels[Math.min(score,4)];
+  fill.style.width=lv.w;fill.style.background=lv.color;
+  text.textContent=lv.label;text.style.color=lv.color;
+}
+
+function validateConfirm(){
+  const p1=document.getElementById('password').value;
+  const p2=document.getElementById('confirm-pass').value;
+  const err=document.getElementById('err-confirm');
+  const inp=document.getElementById('confirm-pass');
+  if(p2.length>0&&p1!==p2){err.style.display='block';inp.className='error';}
+  else if(p2.length>0&&p1===p2){err.style.display='none';inp.className='success';}
+  else{err.style.display='none';inp.className='';}
+}
+
+function togglePass(id,btn){
+  const inp=document.getElementById(id);
+  if(inp.type==='password'){inp.type='text';btn.innerHTML='<i class="fa-solid fa-eye-slash"></i>';}
+  else{inp.type='password';btn.innerHTML='<i class="fa-solid fa-eye"></i>';}
+}
+
+function detectLoc(){
+  document.getElementById('loc-idle').style.display='none';
+  document.getElementById('loc-loading').style.display='block';
+  document.getElementById('loc-found').style.display='none';
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      function(pos){
+        const lat=pos.coords.latitude.toFixed(4);
+        const lng=pos.coords.longitude.toFixed(4);
+        document.getElementById('loc-loading').style.display='none';
+        document.getElementById('loc-found').style.display='block';
+        document.getElementById('lat-txt').textContent='Lat: '+lat;
+        document.getElementById('lng-txt').textContent='Lng: '+lng;
+        document.getElementById('addr-txt').textContent='Detecting address...';
+        setTimeout(()=>{initRegMap(parseFloat(lat),parseFloat(lng));fetchAddr(lat,lng);},300);
+      },
+      function(){
+        document.getElementById('loc-loading').style.display='none';
+        document.getElementById('loc-idle').style.display='block';
+        alert(currentLang==='hi'?'लोकेशन allow करें!':'Please allow location access!');
+      },
+      {enableHighAccuracy:true,timeout:10000}
+    );
+  }
+}
+
+function initRegMap(lat,lng){
+  if(regMap){regMap.remove();regMap=null;}
+  regMap=L.map('reg-map').setView([lat,lng],16);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(regMap);
+  const icon=L.divIcon({html:'<div style="background:#0F6E56;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>',iconSize:[32,32],iconAnchor:[16,32],className:''});
+  regMarker=L.marker([lat,lng],{icon,draggable:true}).addTo(regMap);
+  regMarker.bindPopup(currentLang==='hi'?'<b>आपकी दुकान</b>':'<b>Your Shop</b>').openPopup();
+  regMarker.on('dragend',function(e){
+    const p=e.target.getLatLng();
+    fetchAddr(p.lat.toFixed(4),p.lng.toFixed(4));
+  });
+}
+
+function fetchAddr(lat,lng){
+  document.getElementById('lat-txt').textContent='Lat: '+lat;
+  document.getElementById('lng-txt').textContent='Lng: '+lng;
+  fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json')
+    .then(r=>r.json())
+    .then(data=>{
+      const a=data.address;
+      const addr=(a.road?a.road+', ':'')+(a.suburb?a.suburb+', ':'')+
+        (a.city||a.town||a.village||'')+', '+(a.state||'')+' '+(a.postcode||'');
+      document.getElementById('addr-txt').textContent=addr.trim();
+    })
+    .catch(()=>{document.getElementById('addr-txt').textContent='Lat: '+lat+', Lng: '+lng;});
+}
+
+function doRegister(){
+  const name=document.getElementById('fullname').value.trim();
+  const username=document.getElementById('username').value.trim();
+  const phone=document.getElementById('phone').value.trim();
+  const pass=document.getElementById('password').value;
+  const confirm=document.getElementById('confirm-pass').value;
+  const terms=document.getElementById('terms-check').checked;
+  const l=txt[currentLang];
+
+  if(!name){alert(currentLang==='hi'?'पूरा नाम डालें':'Please enter your full name');return;}
+  if(!username||username.length<3){alert(currentLang==='hi'?'Username कम से कम 3 characters का हो':'Username must be at least 3 characters');return;}
+  if(phone.length!==10){alert(currentLang==='hi'?'सही 10-digit नंबर डालें':'Enter valid 10-digit number');return;}
+  if(pass.length<6){alert(currentLang==='hi'?'Password कम से कम 6 characters का हो':'Password must be at least 6 characters');return;}
+  if(pass!==confirm){alert(currentLang==='hi'?'Passwords match नहीं हो रहे':'Passwords do not match');return;}
+  if(!terms){alert(currentLang==='hi'?'Terms से agree करें':'Please agree to Terms');return;}
+  if(currentRole==='tailor'&&!document.getElementById('shop-name').value){alert(currentLang==='hi'?'दुकान का नाम डालें':'Enter shop name');return;}
+
+  document.getElementById('reg-form').style.display='none';
+  const s=document.getElementById('success-screen');
+  s.style.display='block';
+
+  if(currentRole==='tailor'){
+    document.getElementById('success-title').textContent=l.successTailor;
+    document.getElementById('success-msg').textContent=l.successMsgTailor;
+  } else {
+    document.getElementById('success-title').textContent=l.successTitle;
+    document.getElementById('success-msg').textContent=l.successMsgCustomer;
+  }
+  document.getElementById('success-btn').textContent=l.successBtn;
+}
+
+window.onload=function(){setLang('en');};
+</script>
+</body>
+</html>

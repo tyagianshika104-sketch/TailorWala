@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TailorWala | My Measurements</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--teal:#0F6E56;--tl:#E1F5EE;--tm:#1D9E75;--org:#D85A30;--ol:#FAECE7;--bg:#F1EFE8;--muted:#888780;--border:rgba(0,0,0,0.12);--text:#2C2C2A}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    h1,h2,h3,.brand{font-family:'Syne',sans-serif}
+
+    nav{background:#fff;border-bottom:0.5px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100}
+    .flex-between{display:flex;justify-content:space-between;align-items:center;width:100%}
+    .brand{font-size:20px;font-weight:700;color:var(--teal);cursor:pointer;text-decoration:none}
+    .brand span{color:var(--org)}
+    .back-nav{font-size:14px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:6px}
+    .back-nav:hover{color:var(--teal)}
+
+    .page{max-width:700px;margin:0 auto;padding:1.5rem}
+
+    .page-header{margin-bottom:1.5rem}
+    .page-header h2{font-size:1.5rem;margin-bottom:4px}
+    .page-header p{font-size:13px;color:var(--muted)}
+
+    /* LANG TOGGLE */
+    .lang-row{display:flex;gap:8px;margin-bottom:1.5rem}
+    .lang-btn{padding:5px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;border:1.5px solid var(--border)}
+    .lang-btn.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+    .lang-btn:not(.on){background:#fff;color:var(--muted)}
+
+    /* BODY DIAGRAM */
+    .diagram-card{background:#fff;border-radius:20px;padding:1.5rem;margin-bottom:1.25rem;border:0.5px solid var(--border);display:flex;gap:1.5rem;align-items:flex-start}
+    .diagram-side{flex-shrink:0;text-align:center}
+    .diagram-side svg{width:130px;height:auto}
+    .diagram-info{flex:1}
+    .diagram-info h3{font-size:14px;margin-bottom:6px}
+    .diagram-info p{font-size:12px;color:var(--muted);line-height:1.5}
+    .guide-steps{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+    .guide-step{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--muted)}
+    .step-num{width:20px;height:20px;background:var(--teal);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+
+    /* MEASUREMENT FORM */
+    .mcard{background:#fff;border-radius:20px;padding:1.5rem;margin-bottom:1.25rem;border:0.5px solid var(--border)}
+    .mcard-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+    .mcard-title span{font-size:18px}
+
+    .m-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .m-field{display:flex;flex-direction:column;gap:5px}
+    .m-label{font-size:12px;color:var(--muted);font-weight:500}
+    .m-input-wrap{display:flex;align-items:center;gap:6px}
+    .m-input{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:15px;font-family:'DM Sans',sans-serif;outline:none;color:var(--text);background:#fff;min-width:0}
+    .m-input:focus{border-color:var(--teal)}
+    .m-input.filled{border-color:var(--tm);background:var(--tl)}
+    .m-unit{font-size:12px;color:var(--muted);font-weight:500;flex-shrink:0}
+
+    .unit-toggle{display:flex;background:var(--bg);border-radius:10px;padding:3px;gap:3px;margin-bottom:1.25rem;width:fit-content}
+    .unit-btn{padding:6px 16px;border-radius:8px;border:none;background:none;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted)}
+    .unit-btn.on{background:#fff;color:var(--teal);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+
+    .hint{font-size:11px;color:var(--tm);margin-top:3px}
+
+    .save-bar{position:sticky;bottom:0;background:#fff;border-top:0.5px solid var(--border);padding:1rem 1.5rem;display:flex;gap:10px;align-items:center}
+    .btn-save{flex:1;background:var(--teal);color:#fff;border:none;padding:13px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;cursor:pointer}
+    .btn-save:hover{background:#0a5240}
+    .btn-clear{background:#fff;color:var(--muted);border:1.5px solid var(--border);padding:13px 20px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer}
+
+    /* SAVED VIEW */
+    .saved-card{background:#fff;border-radius:20px;padding:1.5rem;margin-bottom:1.25rem;border:0.5px solid var(--border);display:none}
+    .saved-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+    .saved-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .saved-item{background:var(--bg);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+    .saved-item .sl{font-size:12px;color:var(--muted)}
+    .saved-item .sv{font-size:15px;font-weight:600;color:var(--teal)}
+    .edit-btn{background:none;border:1.5px solid var(--teal);color:var(--teal);padding:6px 16px;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+    .edit-btn:hover{background:var(--teal);color:#fff}
+
+    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#2C2C2A;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;opacity:0;transition:0.3s;z-index:999;white-space:nowrap}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    @media(max-width:500px){
+      .m-grid{grid-template-columns:1fr}
+      .diagram-card{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="flex-between">
+    <a href="index.html" class="brand">✂ Tailor<span>Wala</span></a>
+    <span class="back-nav" onclick="window.location.href='index.html'"><i class="fa-solid fa-arrow-left"></i> <span id="nav-back">Back to Home</span></span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <h2 id="pg-title">📐 My Measurements</h2>
+    <p id="pg-sub">Save once, use across all tailor bookings</p>
+  </div>
+
+  <!-- LANG -->
+  <div class="lang-row">
+    <button class="lang-btn on" onclick="setLang('en',this)">English</button>
+    <button class="lang-btn" onclick="setLang('hi',this)">हिंदी</button>
+  </div>
+
+  <!-- UNIT TOGGLE -->
+  <div class="unit-toggle">
+    <button class="unit-btn on" onclick="setUnit('in',this)" id="btn-in">Inches (in)</button>
+    <button class="unit-btn" onclick="setUnit('cm',this)" id="btn-cm">Centimeters (cm)</button>
+  </div>
+
+  <!-- SAVED VIEW (shown after save) -->
+  <div class="saved-card" id="saved-card">
+    <div class="saved-header">
+      <h3 id="saved-title" style="font-size:15px">✅ Saved Measurements</h3>
+      <button class="edit-btn" onclick="editMeasurements()" id="edit-btn">Edit</button>
+    </div>
+    <div class="saved-grid" id="saved-grid"></div>
+  </div>
+
+  <!-- BODY DIAGRAM + GUIDE -->
+  <div class="diagram-card" id="guide-card">
+    <div class="diagram-side">
+      <svg viewBox="0 0 120 220" xmlns="http://www.w3.org/2000/svg">
+        <!-- Body silhouette -->
+        <ellipse cx="60" cy="28" rx="18" ry="18" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+        <!-- Neck -->
+        <rect x="54" y="44" width="12" height="10" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+        <!-- Torso -->
+        <path d="M30 54 Q25 70 28 100 L92 100 Q95 70 90 54 Q75 48 60 48 Q45 48 30 54Z" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+        <!-- Arms -->
+        <path d="M30 56 Q18 75 20 105 L30 103 Q28 78 36 62Z" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+        <path d="M90 56 Q102 75 100 105 L90 103 Q92 78 84 62Z" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+        <!-- Hips/Waist -->
+        <path d="M28 100 Q24 115 26 130 L94 130 Q96 115 92 100Z" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+        <!-- Legs -->
+        <path d="M26 130 Q24 165 26 200 L50 200 Q52 165 50 130Z" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+        <path d="M94 130 Q96 165 94 200 L70 200 Q68 165 70 130Z" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+
+        <!-- Measurement lines -->
+        <!-- Chest line -->
+        <line x1="28" y1="72" x2="92" y2="72" stroke="#D85A30" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="60" y="70" text-anchor="middle" font-size="7" fill="#D85A30" font-family="DM Sans">chest</text>
+        <!-- Waist line -->
+        <line x1="30" y1="90" x2="90" y2="90" stroke="#0F6E56" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="60" y="88" text-anchor="middle" font-size="7" fill="#0F6E56" font-family="DM Sans">waist</text>
+        <!-- Hip line -->
+        <line x1="27" y1="115" x2="93" y2="115" stroke="#D85A30" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="60" y="113" text-anchor="middle" font-size="7" fill="#D85A30" font-family="DM Sans">hip</text>
+        <!-- Length arrow -->
+        <line x1="108" y1="54" x2="108" y2="200" stroke="#0F6E56" stroke-width="1"/>
+        <text x="114" y="130" text-anchor="start" font-size="6" fill="#0F6E56" font-family="DM Sans" transform="rotate(90,114,130)">length</text>
+      </svg>
+    </div>
+    <div class="diagram-info">
+      <h3 id="guide-title">How to Measure?</h3>
+      <div class="guide-steps">
+        <div class="guide-step"><div class="step-num">1</div><span id="gs1">Use a soft measuring tape</span></div>
+        <div class="guide-step"><div class="step-num">2</div><span id="gs2">Stand straight, breathe normally</span></div>
+        <div class="guide-step"><div class="step-num">3</div><span id="gs3">Chest: measure around fullest part</span></div>
+        <div class="guide-step"><div class="step-num">4</div><span id="gs4">Waist: measure at narrowest point</span></div>
+        <div class="guide-step"><div class="step-num">5</div><span id="gs5">Hip: measure around fullest part</span></div>
+        <div class="guide-step"><div class="step-num">6</div><span id="gs6">Length: shoulder to desired length</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPPER BODY -->
+  <div class="mcard" id="form-card">
+    <div class="mcard-title"><span>👕</span> <span id="upper-title">Upper Body</span></div>
+    <div class="m-grid">
+      <div class="m-field">
+        <div class="m-label" id="l-chest">Chest / Bust</div>
+        <div class="m-input-wrap">
+          <input class="m-input" type="number" id="chest" placeholder="e.g. 36" min="20" max="80" oninput="markFilled(this)">
+          <span class="m-unit" id="u1">in</span>
+        </div>
+        <div class="hint" id="h-chest">Measure around fullest part</div>
+      </div>
+      <div class="m-field">
+        <div class="m-label" id="l-waist">Waist</div>
+        <div class="m-input-wrap">
+          <input class="m-input" type="number" id="waist" placeholder="e.g. 30" min="20" max="80" oninput="markFilled(this)">
+          <span class="m-unit" id="u2">in</span>
+        </div>
+        <div class="hint" id="h-waist">Narrowest part of torso</div>
+      </div>
+      <div class="m-field">
+        <div class="m-label" id="l-hip">Hip</div>
+        <div class="m-input-wrap">
+          <input class="m-input" type="number" id="hip" placeholder="e.g. 38" min="20" max="90" oninput="markFilled(this)">
+          <span class="m-unit" id="u3">in</span>
+        </div>
+        <div class="hint" id="h-hip">Fullest part of hips</div>
+      </div>
+      <div class="m-field">
+        <div class="m-label" id="l-shoulder">Shoulder Width</div>
+        <div class="m-input-wrap">
+          <input class="m-input" type="number" id="shoulder" placeholder="e.g. 15" min="10" max="30" oninput="markFilled(this)">
+          <span class="m-unit" id="u4">in</span>
+        </div>
+        <div class="hint" id="h-shoulder">Across both shoulders</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOWER & LENGTH -->
+  <div class="mcard">
+    <div class="mcard-title"><span>👗</span> <span id="lower-title">Length & Arms</span></div>
+    <div class="m-grid">
+      <div class="m-field">
+        <div class="m-label" id="l-length">Dress Length</div>
+        <div class="m-input-wrap">
+          <input class="m-input" type="number" id="length" placeholder="e.g. 42" min="20" max="70" oninput="markFilled(this)">
+          <span class="m-unit" id="u5">in</span>
+        </div>
+        <div class="hint" id="h-length">Shoulder to desired end</div>
+      </div>
+      <div class="m-field">
+        <div class="m-label" id="l-sleeve">Sleeve Length</div>
+        <div class="m-input-wrap">
+          <input class="m-input" type="number" id="sleeve" placeholder="e.g. 24" min="5" max="40" oninput="markFilled(this)">
+          <span class="m-unit" id="u6">in</span>
+        </div>
+        <div class="hint" id="h-sleeve">Shoulder to wrist</div>
+      </div>
+      <div class="m-field">
+        <div class="m-label" id="l-inseam">Inseam / Salwar Length</div>
+        <div class="m-input-wrap">
+          <input class="m-input" type="number" id="inseam" placeholder="e.g. 38" min="20" max="50" oninput="markFilled(this)">
+          <span class="m-unit" id="u7">in</span>
+        </div>
+        <div class="hint" id="h-inseam">Crotch to ankle</div>
+      </div>
+      <div class="m-field">
+        <div class="m-label" id="l-neck">Neck Size</div>
+        <div class="m-input-wrap">
+          <input class="m-input" type="number" id="neck" placeholder="e.g. 14" min="10" max="25" oninput="markFilled(this)">
+          <span class="m-unit" id="u8">in</span>
+        </div>
+        <div class="hint" id="h-neck">Around base of neck</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="mcard">
+    <div class="mcard-title"><span>📝</span> <span id="notes-title">Special Notes for Tailor</span></div>
+    <textarea id="notes" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;resize:vertical;min-height:80px;color:var(--text)" id="notes-area" placeholder="e.g. I prefer loose fit, extra length needed, blouse back neck deep..."></textarea>
+  </div>
+
+  <div style="height:80px"></div>
+</div>
+
+<!-- SAVE BAR -->
+<div class="save-bar">
+  <button class="btn-clear" onclick="clearAll()" id="clear-btn">Clear</button>
+  <button class="btn-save" onclick="saveMeasurements()" id="save-btn">💾 Save Measurements</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Measurements saved!</div>
+
+<script>
+let currentUnit = 'in';
+let currentLang = 'en';
+
+const labels = {
+  en: {
+    navBack:'Back to Home', pgTitle:'📐 My Measurements', pgSub:'Save once, use across all tailor bookings',
+    guideTitle:'How to Measure?',
+    gs1:'Use a soft measuring tape',gs2:'Stand straight, breathe normally',
+    gs3:'Chest: measure around fullest part',gs4:'Waist: measure at narrowest point',
+    gs5:'Hip: measure around fullest part',gs6:'Length: shoulder to desired length',
+    upperTitle:'Upper Body', lowerTitle:'Length & Arms', notesTitle:'Special Notes for Tailor',
+    chest:'Chest / Bust', waist:'Waist', hip:'Hip', shoulder:'Shoulder Width',
+    length:'Dress Length', sleeve:'Sleeve Length', inseam:'Inseam / Salwar Length', neck:'Neck Size',
+    hChest:'Measure around fullest part', hWaist:'Narrowest part of torso',
+    hHip:'Fullest part of hips', hShoulder:'Across both shoulders',
+    hLength:'Shoulder to desired end', hSleeve:'Shoulder to wrist',
+    hInseam:'Crotch to ankle', hNeck:'Around base of neck',
+    savedTitle:'✅ Saved Measurements', editBtn:'Edit',
+    saveBtn:'💾 Save Measurements', clearBtn:'Clear',
+    toast:'✅ Measurements saved successfully!',
+    notesPlaceholder:'e.g. I prefer loose fit, extra length needed...',
+  },
+  hi: {
+    navBack:'होम पर जाएं', pgTitle:'📐 मेरे माप', pgSub:'एक बार सेव करें, सभी बुकिंग में उपयोग करें',
+    guideTitle:'माप कैसे लें?',
+    gs1:'मुलायम मापने वाला टेप उपयोग करें',gs2:'सीधे खड़े हों, सामान्य सांस लें',
+    gs3:'छाती: सबसे चौड़े हिस्से के चारों ओर',gs4:'कमर: सबसे पतले हिस्से पर',
+    gs5:'कूल्हे: सबसे चौड़े हिस्से के चारों ओर',gs6:'लंबाई: कंधे से वांछित लंबाई तक',
+    upperTitle:'ऊपरी शरीर', lowerTitle:'लंबाई और बाहें', notesTitle:'दर्जी के लिए विशेष नोट',
+    chest:'छाती / बस्ट', waist:'कमर', hip:'कूल्हे', shoulder:'कंधे की चौड़ाई',
+    length:'कपड़े की लंबाई', sleeve:'बाजू की लंबाई', inseam:'सलवार की लंबाई', neck:'गले का साइज़',
+    hChest:'सबसे चौड़े हिस्से के चारों ओर', hWaist:'कमर का सबसे पतला हिस्सा',
+    hHip:'कूल्हों का सबसे चौड़ा हिस्सा', hShoulder:'दोनों कंधों के पार',
+    hLength:'कंधे से वांछित अंत तक', hSleeve:'कंधे से कलाई तक',
+    hInseam:'जांघ से टखने तक', hNeck:'गले के आधार के चारों ओर',
+    savedTitle:'✅ सेव किए गए माप', editBtn:'बदलें',
+    saveBtn:'💾 माप सेव करें', clearBtn:'मिटाएं',
+    toast:'✅ माप सफलतापूर्वक सेव हो गए!',
+    notesPlaceholder:'जैसे: मुझे ढीला फिट पसंद है, थोड़ी ज़्यादा लंबाई चाहिए...',
+  }
+};
+
+function setLang(lang, btn) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const l = labels[lang];
+  document.getElementById('nav-back').textContent=l.navBack;
+  document.getElementById('pg-title').textContent=l.pgTitle;
+  document.getElementById('pg-sub').textContent=l.pgSub;
+  document.getElementById('guide-title').textContent=l.guideTitle;
+  document.getElementById('gs1').textContent=l.gs1;document.getElementById('gs2').textContent=l.gs2;
+  document.getElementById('gs3').textContent=l.gs3;document.getElementById('gs4').textContent=l.gs4;
+  document.getElementById('gs5').textContent=l.gs5;document.getElementById('gs6').textContent=l.gs6;
+  document.getElementById('upper-title').textContent=l.upperTitle;
+  document.getElementById('lower-title').textContent=l.lowerTitle;
+  document.getElementById('notes-title').textContent=l.notesTitle;
+  document.getElementById('l-chest').textContent=l.chest;
+  document.getElementById('l-waist').textContent=l.waist;
+  document.getElementById('l-hip').textContent=l.hip;
+  document.getElementById('l-shoulder').textContent=l.shoulder;
+  document.getElementById('l-length').textContent=l.length;
+  document.getElementById('l-sleeve').textContent=l.sleeve;
+  document.getElementById('l-inseam').textContent=l.inseam;
+  document.getElementById('l-neck').textContent=l.neck;
+  document.getElementById('h-chest').textContent=l.hChest;
+  document.getElementById('h-waist').textContent=l.hWaist;
+  document.getElementById('h-hip').textContent=l.hHip;
+  document.getElementById('h-shoulder').textContent=l.hShoulder;
+  document.getElementById('h-length').textContent=l.hLength;
+  document.getElementById('h-sleeve').textContent=l.hSleeve;
+  document.getElementById('h-inseam').textContent=l.hInseam;
+  document.getElementById('h-neck').textContent=l.hNeck;
+  document.getElementById('saved-title').textContent=l.savedTitle;
+  document.getElementById('edit-btn').textContent=l.editBtn;
+  document.getElementById('save-btn').textContent=l.saveBtn;
+  document.getElementById('clear-btn').textContent=l.clearBtn;
+  document.getElementById('notes').placeholder=l.notesPlaceholder;
+}
+
+function setUnit(unit, btn) {
+  currentUnit = unit;
+  document.querySelectorAll('.unit-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const units = ['u1','u2','u3','u4','u5','u6','u7','u8'];
+  units.forEach(id => { document.getElementById(id).textContent = unit; });
+
+  // Convert existing values
+  const fields = ['chest','waist','hip','shoulder','length','sleeve','inseam','neck'];
+  fields.forEach(id => {
+    const inp = document.getElementById(id);
+    if(inp.value) {
+      if(unit === 'cm') {
+        inp.value = Math.round(parseFloat(inp.value) * 2.54);
+        inp.max = unit==='cm'?'200':'80';
+      } else {
+        inp.value = Math.round(parseFloat(inp.value) / 2.54);
+      }
+    }
+  });
+}
+
+function markFilled(inp) {
+  if(inp.value) inp.classList.add('filled');
+  else inp.classList.remove('filled');
+}
+
+function saveMeasurements() {
+  const fields = ['chest','waist','hip','shoulder','length','sleeve','inseam','neck'];
+  const l = labels[currentLang];
+  const fieldLabels = [l.chest,l.waist,l.hip,l.shoulder,l.length,l.sleeve,l.inseam,l.neck];
+
+  const data = {};
+  let hasAny = false;
+  fields.forEach((id,i) => {
+    const val = document.getElementById(id).value;
+    if(val) { data[fieldLabels[i]] = val + ' ' + currentUnit; hasAny = true; }
+  });
+
+  if(!hasAny) {
+    alert(currentLang==='hi'?'कम से कम एक माप डालें':'Please enter at least one measurement');
+    return;
+  }
+
+  data['Notes'] = document.getElementById('notes').value || '—';
+  localStorage.setItem('tw_measurements', JSON.stringify(data));
+  localStorage.setItem('tw_unit', currentUnit);
+
+  // Show saved card
+  const grid = document.getElementById('saved-grid');
+  grid.innerHTML = Object.entries(data).map(([k,v]) => `
+    <div class="saved-item">
+      <span class="sl">${k}</span>
+      <span class="sv">${v}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('saved-card').style.display = 'block';
+  document.getElementById('form-card').style.display = 'none';
+  document.getElementById('guide-card').style.display = 'none';
+
+  const toast = document.getElementById('toast');
+  toast.textContent = l.toast;
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 3000);
+}
+
+function editMeasurements() {
+  document.getElementById('saved-card').style.display = 'none';
+  document.getElementById('form-card').style.display = 'block';
+  document.getElementById('guide-card').style.display = 'block';
+}
+
+function clearAll() {
+  const fields = ['chest','waist','hip','shoulder','length','sleeve','inseam','neck'];
+  fields.forEach(id => {
+    const inp = document.getElementById(id);
+    inp.value = '';
+    inp.classList.remove('filled','error');
+  });
+  document.getElementById('notes').value = '';
+  localStorage.removeItem('tw_measurements');
+}
+
+// Load saved measurements on page open
+window.onload = function() {
+  const saved = localStorage.getItem('tw_measurements');
+  const savedUnit = localStorage.getItem('tw_unit');
+  if(saved && savedUnit) {
+    currentUnit = savedUnit;
+    if(savedUnit === 'cm') {
+      document.getElementById('btn-in').classList.remove('on');
+      document.getElementById('btn-cm').classList.add('on');
+      ['u1','u2','u3','u4','u5','u6','u7','u8'].forEach(id=>document.getElementById(id).textContent='cm');
+    }
+  }
+};
+</script>
+</body>
+</html>
